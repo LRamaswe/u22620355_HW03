@@ -1,0 +1,107 @@
+﻿@model u22620355_HW03.Models.ReportVM
+@{
+    ViewBag.Title = "Report";
+}
+
+<h2> Generate a Current Loans Report</h2>
+
+<!-- Display Success and Error Messages -->
+@if (ViewBag.SuccessMessage != null)
+{
+    <div class="alert alert-success">@ViewBag.SuccessMessage</div>
+}
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
+}
+
+<!-- Form to Enter Book Details -->
+<form asp-action="GenerateReport" method="post">
+    <div class="form-group">
+        <label for="BookId">Book ID</label>
+        <input type="text" id="BookId" name="BookId" class="form-control" placeholder="Enter Book ID" required />
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Generate Report</button>
+    </div>
+</form>
+
+<br />
+
+<!-- Display Report Results Directly on the Page -->
+@if (Model.borrows != null && Model.borrows.Count > 0)
+{
+    <h4>Report Results</h4>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Student Name</th>
+                <th>Book Name</th>
+                <th>Taken Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var borrow in Model.borrows)
+            {
+                var student = Model.students.FirstOrDefault(s => s.studentId == borrow.studentId);
+                var book = Model.books.FirstOrDefault(b => b.bookId == borrow.bookId);
+                string status = borrow.broughtDate == null ? "Out" : "Available";
+
+                <tr>
+                    <td>@student?.name @student?.surname</td>
+                    <td>@book?.name</td>
+                    <td>@borrow.takenDate</td>
+                    <td>@status</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No report data available. Please enter a valid Book ID and generate the report.</p>
+}
+
+<br />
+
+<!-- Save Report Section -->
+<h3>Save Report</h3>
+<form asp-action="SaveReport" method="post">
+    <div class="form-group">
+        <label for="FileName">File Name</label>
+        <input type="text" id="FileName" name="FileName" class="form-control" placeholder="Enter file name" required />
+    </div>
+    <div class="form-group">
+        <label for="FileType">File Type</label>
+        <select id="FileType" name="FileType" class="form-control">
+            <option value="PDF">PDF</option>
+            <option value="Excel">Excel</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-success">Save Report</button>
+</form>
+
+<br />
+
+<!-- Document Archive Section -->
+<h3>Saved Reports</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Report Name</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @* Example for demonstration, adjust as needed *@
+        <tr>
+            <td>Example Report 1</td>
+            <td>
+                <a href="@Url.Content("~/App_Data/Reports/ExampleReport1.pdf")" class="btn btn-info">Download</a>
+                <button class="btn btn-danger">Delete</button>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
